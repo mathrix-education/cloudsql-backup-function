@@ -1,0 +1,41 @@
+{
+  "name": "@mathrix-education/cloud-function-template",
+  "version": "0.1.0",
+  "description": "Cloud Function based on Node.js 10 template.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:ci": "NODE_ENV=CI jest --ci --runInBand --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mathrix-education/cloud-function-template.git"
+  },
+  "keywords": [
+    "cloud-function"
+  ],
+  "author": "Mathieu Bour <mathieu@mathrix.fr>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mathrix-education/cloud-function-template/issues"
+  },
+  "homepage": "https://github.com/mathrix-education/cloud-function-template#readme",
+  "private": true,
+  "dependencies": {
+    "@sentry/integrations": "^5.8.0",
+    "@sentry/node": "^5.9.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "@types/node": "^12.12.14",
+    "@typescript-eslint/eslint-plugin": "^2.9.0",
+    "@typescript-eslint/parser": "^2.9.0",
+    "eslint": "^6.7.2",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.2"
+  }
+}
