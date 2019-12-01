@@ -82,6 +82,8 @@ describe('encodePubSubEvent', () => {
   it('should properly encode PubSub event payload', () => {
     const data: DatabaseBackupEvent = { database: 'test_database' };
     const base64Payload = encodePubSubEvent(data);
-    expect(base64Payload.endsWith('=')).toBeTruthy();
+
+    expect(base64Payload.data).toBeTruthy();
+    expect(base64Payload.data.endsWith('=')).toBeTruthy();
   });
 });

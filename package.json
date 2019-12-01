@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "lint": "eslint",
+    "lint": "eslint \"**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:ci": "NODE_ENV=CI jest --ci --runInBand --coverage"

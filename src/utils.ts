@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { DatabaseBackupEvent } from './interfaces/database-backup-event';
+import { PubSubEvent } from './interfaces/pubsub-event';
 
 export function getBucket(): string {
   if (!process.env.BUCKET) {
@@ -17,12 +18,14 @@ export function getUri(database: string): string {
   return `gs://${getBucket()}/databases/${database}/${database}-${getDate()}.sql.gz`;
 }
 
-export function decodePubSubEvent(pubSubEvent: { data: string }): DatabaseBackupEvent {
+export function decodePubSubEvent(pubSubEvent: PubSubEvent): DatabaseBackupEvent {
   const dataJson = Buffer.from(pubSubEvent.data, 'base64').toString();
   return JSON.parse(dataJson);
 }
 
-export function encodePubSubEvent(data: DatabaseBackupEvent): string {
+export function encodePubSubEvent(data: DatabaseBackupEvent): PubSubEvent {
   const dataJson = JSON.stringify(data);
-  return Buffer.from(dataJson).toString('base64');
+  return {
+    data: Buffer.from(dataJson).toString('base64'),
+  };
 }

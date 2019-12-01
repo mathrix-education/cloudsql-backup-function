@@ -54,9 +54,10 @@ async function main(pubSubEvent: PubSubEvent): Promise<number> {
   });
 
   if (res.data.status === 'PENDING') {
+    console.log(res);
     return 0;
   } else {
-    return 1
+    return 1;
   }
 }
 
@@ -68,8 +69,12 @@ exports['cloudsql-backup-function'] = async (pubSubEvent: PubSubEvent): Promise<
   try {
     return await main(pubSubEvent);
   } catch (error) {
-    Sentry.captureException(error);
-    await Sentry.flush(2000);
+    if (process.env.SENTRY_DSN) {
+      Sentry.captureException(error);
+      await Sentry.flush(2000);
+    } else {
+      console.error(error);
+    }
     throw error; // Rethrow error
   }
 };
