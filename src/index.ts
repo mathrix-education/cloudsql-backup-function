@@ -53,8 +53,8 @@ async function main(pubSubEvent: PubSubEvent): Promise<number> {
     },
   });
 
-  if (res.data.status === 'PENDING') {
-    console.log(res);
+  if (res.headers.status === 200) {
+    console.log(`Successfully queried backup of ${database}. Status is: ${res.data.status}`);
     return 0;
   } else {
     return 1;
