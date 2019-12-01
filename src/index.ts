@@ -1,5 +1,8 @@
 import { RewriteFrames } from '@sentry/integrations';
 import * as Sentry from '@sentry/node';
+import { google } from 'googleapis';
+import { PubSubEvent } from './interfaces/pubsub-event';
+import { decodePubSubEvent, getUri } from './utils';
 
 if (process.env.SENTRY_DSN) {
   /**
@@ -18,19 +21,52 @@ if (process.env.SENTRY_DSN) {
 
 /**
  * Core function body
- * @param data
+ * @param pubSubEvent
  */
-async function main(data): Promise<number> {
-  return 0;
+async function main(pubSubEvent: PubSubEvent): Promise<number> {
+  // Extract PubSub event data
+  const data = decodePubSubEvent(pubSubEvent);
+  const database = data.database;
+
+  // Authenticate the Google API
+  const auth = new google.auth.GoogleAuth({
+    // Scopes reference: https://cloud.google.com/sql/docs/mysql/admin-api/#OAuth2Authorizing
+    scopes: [
+      'https://www.googleapis.com/auth/sqlservice.admin',
+      'https://www.googleapis.com/auth/cloud-platform',
+    ],
+  });
+  const authClient = await auth.getClient();
+  const project = await auth.getProjectId();
+
+  const res = await google.sqladmin('v1beta4').instances.export({
+    project,
+    instance: 'mysql',
+    auth: authClient,
+    requestBody: {
+      exportContext: {
+        kind: 'sql#exportContext',
+        fileType: 'SQL',
+        uri: getUri(database),
+        databases: [database],
+      },
+    },
+  });
+
+  if (res.data.status === 'PENDING') {
+    return 0;
+  } else {
+    return 1
+  }
 }
 
 /**
  * Sentry wrapper.
- * @param data
+ * @param pubSubEvent
  */
-exports['your-function'] = async (data): Promise<number> => {
+exports['cloudsql-backup-function'] = async (pubSubEvent: PubSubEvent): Promise<number> => {
   try {
-    return await main(data);
+    return await main(pubSubEvent);
   } catch (error) {
     Sentry.captureException(error);
     await Sentry.flush(2000);
